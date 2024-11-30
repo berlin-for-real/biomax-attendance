@@ -14,10 +14,10 @@ datasource db {
 }
 
 model Employee {
-  id        Int      @id @default(autoincrement())
+  id        Int          @id @default(autoincrement())
   name      String
   department String
-  checkIns  Attendance[]
+  checkIns  Attendance[] @relation("EmployeeAttendances")
 }
 
 model Attendance {
@@ -26,7 +26,5 @@ model Attendance {
   checkIn    DateTime
   checkOut   DateTime?
   status     String
-
-  Employee   Employee @relation(fields: [employeeId], references: [id])
+  Employee   Employee @relation("EmployeeAttendances", fields: [employeeId], references: [id])
 }
-
