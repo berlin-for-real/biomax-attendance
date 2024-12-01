@@ -13,18 +13,39 @@ datasource db {
   url      = "postgresql://postgres:thequick@localhost:5432/biomax_attendance"
 }
 
+model Department {
+  id        Int        @id @default(autoincrement()) // Department ID
+  name      String // Department name
+  employees Employee[] // Relation to Employee
+}
+
 model Employee {
-  id        Int          @id @default(autoincrement())
-  name      String
-  department String
-  checkIns  Attendance[] @relation("EmployeeAttendances")
+  id           Int                @id @default(autoincrement()) // Employee ID
+  name         String // Employee name
+  fatherName   String // Employee's father's name
+  departmentId Int // Department ID
+  department   Department         @relation(fields: [departmentId], references: [id]) // Relation to Department
+  attendances  Attendance[] // Relation to Attendance
+  reports      AttendanceReport[] // Relation to AttendanceReport
 }
 
 model Attendance {
-  id         Int      @id @default(autoincrement())
-  employeeId Int
-  checkIn    DateTime
-  checkOut   DateTime?
-  status     String
-  Employee   Employee @relation("EmployeeAttendances", fields: [employeeId], references: [id])
+  id         Int       @id @default(autoincrement()) // ID of the attendance record
+  employeeId Int // Employee ID
+  checkIn    DateTime // Check-in time
+  checkOut   DateTime? // Check-out time (optional)
+  status     String // Status (e.g., "present", "absent")
+
+  Employee Employee @relation(fields: [employeeId], references: [id]) // Relation to Employee
+}
+
+model AttendanceReport {
+  id          Int      @id @default(autoincrement()) // ID of the report
+  month       String // Month of the report (e.g., "November 2024")
+  employeeId  Int // Employee ID
+  presentDays Int      @default(0) // Total days marked as present
+  absentDays  Int      @default(0) // Total days marked as absent
+  createdAt   DateTime @default(now()) // Timestamp of when the report was generated
+
+  Employee Employee @relation(fields: [employeeId], references: [id]) // Relation to Employee
 }
